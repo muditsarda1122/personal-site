@@ -60,8 +60,8 @@ book: { label: "Book a 20-min call", href: "https://cal.com/CALCOM_USERNAME/20mi
 
 ## Photos and icons
 
-Originals live in `photos/` (git-ignored, not served). `npm run images` regenerates `public/img/*.webp` and `src/app/apple-icon.png`
-(from `src/app/icon.svg`) with sharp. The Open Graph image is built from `src/app/opengraph-image.tsx` at build time.
+Originals live in `photos/` (git-ignored, not served). `npm run images` regenerates `public/img/*.webp` and the browser-tab icons
+(`src/app/icon.png`, `apple-icon.png`, `favicon.ico`, cropped from `photos/me.jpeg`) with sharp. The Open Graph image is built from `src/app/opengraph-image.tsx` at build time.
 
 ## Deploy on Vercel
 
