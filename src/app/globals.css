@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fdfdfc;
+  --ink: #1c1b1b;
+  --ink-2: #5a5955;
+  /* Spec value #8a8883 is 3.5:1 on --bg and fails AA at 12-13px; this is 5.1:1. */
+  --ink-3: #6f6d68;
+  --line: #ecece9;
+  --card: #ffffff;
+  --accent: #eb4819;
+  --dark: #1c1b1b;
+  --ease: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-dark: var(--dark);
+  --font-body: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-newsreader), Georgia, serif;
+}
+
+/* Mobile-first: `sm:` means 600px and up. */
+@theme {
+  --breakpoint-sm: 600px;
+}
+
+@utility column {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 704px;
+  padding-inline: 16px;
+}
+
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--ink-2);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Highlighter pairs, shared by marks and chips. Each pair is >= 5.3:1. */
+.tone-orange { --tone-bg: #f5d188; --tone-fg: #8a2e08; }
+.tone-green { --tone-bg: #cfe8bd; --tone-fg: #2f5a1a; }
+.tone-blue { --tone-bg: #c4e2fb; --tone-fg: #0d4f7a; }
+.tone-lavender { --tone-bg: #c9c9fb; --tone-fg: #34318a; }
+.tone-pink { --tone-bg: #f9c9d6; --tone-fg: #8a2443; }
+.tone-salmon { --tone-bg: #f9b28c; --tone-fg: #7a2c0d; }
+
+.chip {
+  display: inline-block;
+  border-radius: 9999px;
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.mark {
+  border-radius: 3px;
+  background-image: linear-gradient(var(--tone-bg), var(--tone-bg));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: var(--tone-fg);
+  padding: 0 0.28em;
+  white-space: nowrap;
+  transition: background-size 600ms linear 150ms;
+}
+
+.text-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-thickness 200ms;
+}
+.text-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  padding: 14px;
+  transition: box-shadow 300ms;
+}
+.card-linked:hover,
+.card-linked:focus-within {
+  box-shadow: 0 0 0 3px rgba(235, 72, 25, 0.15);
+}
+/* The title link stretches over the whole card. */
+.card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+}
+.card-arrow {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 300ms;
+}
+.card-linked:hover .card-arrow,
+.card-linked:focus-within .card-arrow {
+  opacity: 1;
+}
+
+/* Motion */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes draw {
+  from {
+    background-size: 0% 100%;
+  }
+}
+
+/* Page load: children of .stagger fade up 60ms apart. */
+.stagger > * {
+  animation: fade-up 500ms var(--ease) backwards;
+}
+.stagger > :nth-child(2) { animation-delay: 60ms; }
+.stagger > :nth-child(3) { animation-delay: 120ms; }
+.stagger > :nth-child(4) { animation-delay: 180ms; }
+.stagger .mark {
+  animation: draw 600ms linear 210ms backwards;
+}
+
+/* Scroll: Reveal adds .is-visible once. Marks inside draw 150ms later. */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 500ms var(--ease),
+    transform 500ms var(--ease);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+.reveal:not(.is-visible) .mark {
+  background-size: 0% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal:not(.is-visible) .mark {
+    background-size: 100% 100%;
+  }
+}
+
+/* Markdown post body (/writing/[slug]) */
+.prose-post {
+  max-width: 640px;
+  color: #2a2927;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+.prose-post > * + * {
+  margin-top: 1.1em;
+}
+.prose-post h2 {
+  margin: 36px 0 12px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.55;
+  text-transform: uppercase;
+}
+.prose-post h3 {
+  margin: 28px 0 8px;
+  color: var(--ink);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+.prose-post blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 18px;
+  color: var(--ink);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.5;
+}
+.prose-post pre {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f4f4f2;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.prose-post code {
+  border-radius: 4px;
+  background: #f4f4f2;
+  padding: 1px 5px;
+  font-family: var(--font-body);
+  font-size: 0.8em;
+}
+.prose-post pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+.prose-post ul,
+.prose-post ol {
+  padding-left: 1.4em;
+}
+.prose-post ul {
+  list-style: disc;
+}
+.prose-post ol {
+  list-style: decimal;
+}
+.prose-post li + li {
+  margin-top: 0.3em;
+}
+.prose-post img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.prose-post hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.prose-post table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+.prose-post th,
+.prose-post td {
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  text-align: left;
+}

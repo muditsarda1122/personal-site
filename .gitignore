@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+next-env.d.ts
+.env*
+.vercel
+.DS_Store
+*.tsbuildinfo
+# Original photos; only the generated WebP files in public/img are committed.
+photos
